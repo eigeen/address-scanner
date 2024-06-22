@@ -1,7 +1,7 @@
 pub use address::MemoryUtils;
 
-pub use macros::AddressRecord;
 pub use macros::hex_str_to_bytes;
+pub use macros::AddressRecord;
 
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
@@ -12,5 +12,7 @@ pub enum Error {
 }
 
 pub trait AddressProvider: 'static + Send + Sync {
-    fn get_address(&self) -> Result<u64, Error>;
+    fn get_address(&self) -> Result<usize, Error>;
+
+    fn name(&self) -> &'static str;
 }

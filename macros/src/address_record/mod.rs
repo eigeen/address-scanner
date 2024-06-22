@@ -11,7 +11,7 @@ pub fn derive_address_record_impl(input: proc_macro::TokenStream) -> proc_macro:
     let input = parse_macro_input!(input as DeriveInput);
 
     let mut pattern: Option<String> = None;
-    let mut offset: Option<i64> = None;
+    let mut offset: Option<isize> = None;
 
     for attr in input.attrs.iter() {
         if attr.path() != RECORD {
@@ -63,7 +63,7 @@ pub fn derive_address_record_impl(input: proc_macro::TokenStream) -> proc_macro:
                     ..
                 }) = value
                 {
-                    let mut num = lit.base10_parse::<i64>().unwrap();
+                    let mut num = lit.base10_parse::<isize>().unwrap();
                     if is_neg {
                         num = -num;
                     }
@@ -104,7 +104,7 @@ pub fn derive_address_record_impl(input: proc_macro::TokenStream) -> proc_macro:
     );
     let consts = quote! {
         pub const #const_pattern: &str = #pattern;
-        pub const #const_offset: i64 = #offset;
+        pub const #const_offset: isize = #offset;
     };
     let struct_name = input.ident;
     let mod_name = Ident::new(
@@ -118,16 +118,20 @@ pub fn derive_address_record_impl(input: proc_macro::TokenStream) -> proc_macro:
         }
 
         impl ::address_scanner::AddressProvider for #struct_name {
-            fn get_address(&self) -> Result<u64, ::address_scanner::Error> {
+            fn get_address(&self) -> Result<usize, ::address_scanner::Error> {
                 Self::scan_first()
+            }
+
+            fn name(&self) -> &'static str {
+                stringify!(#struct_name)
             }
         }
 
         impl #struct_name {
-            pub fn scan_first() -> Result<u64, ::address_scanner::Error> {
+            pub fn scan_first() -> Result<usize, ::address_scanner::Error> {
                 let result = ::address_scanner::MemoryUtils::scan_first(#mod_name::#const_pattern);
                 result.map(|address| {
-                    (address as i64 + #mod_name::#const_offset) as u64
+                    (address as isize + #mod_name::#const_offset) as usize
                 }).map_err(::address_scanner::Error::Memory)
             }
         }
