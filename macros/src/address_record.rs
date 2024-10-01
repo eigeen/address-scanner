@@ -129,7 +129,7 @@ pub fn derive_address_record_impl(input: proc_macro::TokenStream) -> proc_macro:
 
         impl #struct_name {
             pub fn scan_first() -> Result<usize, ::address_scanner::Error> {
-                let result = ::address_scanner::MemoryUtils::scan_first(#mod_name::#const_pattern);
+                let result = ::address_scanner::MemoryUtils::auto_scan_first(#mod_name::#const_pattern);
                 result.map(|address| {
                     (address as isize + #mod_name::#const_offset) as usize
                 }).map_err(::address_scanner::Error::Memory)

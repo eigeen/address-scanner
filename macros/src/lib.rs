@@ -1,4 +1,4 @@
-use address::memory_utils;
+use address::memory_util;
 use quote::{quote, ToTokens};
 use syn::{parse_macro_input, LitStr};
 
@@ -23,7 +23,7 @@ mod internal;
 /// 通配符：支持 `**`, `??`, `?`，通配符转换为 `0xFF`
 pub fn hex_str_to_bytes(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let input_string = parse_macro_input!(input as LitStr).value();
-    let bytes = memory_utils::space_hex_to_bytes(&input_string).unwrap();
+    let bytes = memory_util::space_hex_to_bytes(&input_string).unwrap();
     let bytes_ref: &[u8] = bytes.as_ref();
 
     let output = quote! {

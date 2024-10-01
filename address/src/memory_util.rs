@@ -1,7 +1,7 @@
 use std::{io::Cursor, slice};
 
 pub use crate::pattern_scan::Pattern;
-use crate::{pattern_scan, MemoryError};
+use crate::{pattern_scan, windows_util, MemoryError};
 
 pub struct MemoryUtils;
 
@@ -35,6 +35,20 @@ impl MemoryUtils {
         } else {
             Ok(result)
         }
+    }
+
+    /// 自动获取主模块地址，并扫描内存，查找匹配的第一个地址
+    pub fn auto_scan_first(pattern: &str) -> Result<usize, MemoryError> {
+        let (base, size) = unsafe { windows_util::get_base_module_space() }?;
+
+        Self::scan_first(base, size, pattern)
+    }
+
+    /// 自动获取主模块地址，并扫描内存，查找匹配的所有地址
+    pub fn auto_scan_all(pattern: &str) -> Result<Vec<usize>, MemoryError> {
+        let (base, size) = unsafe { windows_util::get_base_module_space() }?;
+
+        Self::scan_all(base, size, pattern)
     }
 
     // /// 扫描内存，查找匹配的地址，如果有且仅有一个，则返回地址，否则返回错误

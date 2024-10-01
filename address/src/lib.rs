@@ -1,7 +1,8 @@
-pub mod memory_utils;
+pub mod memory_util;
 mod pattern_scan;
+mod windows_util;
 
-pub use memory_utils::MemoryUtils;
+pub use memory_util::MemoryUtils;
 
 #[derive(Debug, thiserror::Error)]
 pub enum MemoryError {
@@ -11,4 +12,7 @@ pub enum MemoryError {
     MultipleMatchesFound,
     #[error("pattern scan error: {0}")]
     PatternScan(#[from] pattern_scan::Error),
+
+    #[error("windows error: {0}")]
+    Windows(#[from] windows::core::Error),
 }
