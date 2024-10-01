@@ -2,8 +2,8 @@ use address::memory_utils;
 use quote::{quote, ToTokens};
 use syn::{parse_macro_input, LitStr};
 
-mod internal;
 mod address_record;
+mod internal;
 
 #[proc_macro]
 /// 将特征码模板字符串字面量转换为字节数组
@@ -37,4 +37,3 @@ pub fn hex_str_to_bytes(input: proc_macro::TokenStream) -> proc_macro::TokenStre
 pub fn derive_address_record_impl(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     address_record::derive_address_record_impl(input)
 }
-

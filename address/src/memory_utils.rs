@@ -7,14 +7,13 @@ pub struct MemoryUtils;
 
 impl MemoryUtils {
     /// 扫描内存，查找匹配的第一个地址
-    pub fn scan_first(pattern: &str) -> Result<u64, MemoryError> {
-        let start_addr = 0x140000000_u64;
-        let memory_slice = unsafe { slice::from_raw_parts(start_addr as *const u8, 0x4000000) };
+    pub fn scan_first(base: usize, size: usize, pattern: &str) -> Result<usize, MemoryError> {
+        let memory_slice = unsafe { slice::from_raw_parts(base as *const u8, size) };
 
         let matches = pattern_scan::scan_first_match(Cursor::new(memory_slice), pattern)
             .map_err(MemoryError::PatternScan)?;
         if let Some(matches) = matches {
-            let real_ptr = start_addr + matches as u64;
+            let real_ptr = base + matches;
             return Ok(real_ptr);
         }
 
@@ -22,14 +21,13 @@ impl MemoryUtils {
     }
 
     /// 扫描内存，查找匹配的所有地址
-    pub fn scan_all(pattern: &str) -> Result<Vec<u64>, MemoryError> {
-        let start_addr = 0x140000000_u64;
-        let memory_slice = unsafe { slice::from_raw_parts(start_addr as *const u8, 0x4000000) };
+    pub fn scan_all(base: usize, size: usize, pattern: &str) -> Result<Vec<usize>, MemoryError> {
+        let memory_slice = unsafe { slice::from_raw_parts(base as *const u8, size) };
 
         let result = pattern_scan::scan(Cursor::new(memory_slice), pattern)
             .map_err(MemoryError::PatternScan)?
             .into_iter()
-            .map(|v| v as u64 + start_addr)
+            .map(|v| v + base)
             .collect::<Vec<_>>();
 
         if result.is_empty() {
