@@ -11,6 +11,12 @@ pub enum Error {
     MultipleMatchesFound,
 }
 
+impl Error {
+    pub fn is_not_found(&self) -> bool {
+        matches!(self, Error::Memory(address::MemoryError::NotFound))
+    }
+}
+
 pub trait AddressProvider: 'static + Send + Sync {
     fn get_address(&self) -> Result<usize, Error>;
 
